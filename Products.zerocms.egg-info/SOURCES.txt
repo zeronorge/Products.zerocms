@@ -1,0 +1,15 @@
+README.txt
+setup.py
+Products/__init__.py
+Products.zerocms.egg-info/PKG-INFO
+Products.zerocms.egg-info/SOURCES.txt
+Products.zerocms.egg-info/dependency_links.txt
+Products.zerocms.egg-info/entry_points.txt
+Products.zerocms.egg-info/namespace_packages.txt
+Products.zerocms.egg-info/not-zip-safe
+Products.zerocms.egg-info/requires.txt
+Products.zerocms.egg-info/top_level.txt
+Products/zerocms/__init__.py
+Products/zerocms/importer.py
+Products/zerocms/interfaces.py
+Products/zerocms/tests.py

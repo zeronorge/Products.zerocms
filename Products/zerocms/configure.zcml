@@ -1,0 +1,25 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:grok="http://namespaces.zope.org/grok"
+            xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+           i18n_domain="zerocms">
+
+    
+    <!-- Register an extension profile to make the product installable -->
+    <genericsetup:registerProfile
+        name="default"
+        title="seantis.dir.base"
+        description="Directory package for Plone using Dexterity"
+        directory="profiles/default"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+    <grok:grok package="." />
+        <include package="plone.app.registry" />
+
+    <!-- Control panel -->
+    <browser:page
+        name="zerocms-settings"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".controlpanel.ZeroCMSSettingsControlPanel"
+        permission="cmf.ManagePortal"
+        />
+</configure>
