@@ -1,4 +1,3 @@
-README.txt
 setup.py
 Products/__init__.py
 Products.zerocms.egg-info/PKG-INFO
@@ -10,6 +9,12 @@ Products.zerocms.egg-info/not-zip-safe
 Products.zerocms.egg-info/requires.txt
 Products.zerocms.egg-info/top_level.txt
 Products/zerocms/__init__.py
-Products/zerocms/importer.py
+Products/zerocms/controlpanel.py
+Products/zerocms/events.py
+Products/zerocms/handler.py
 Products/zerocms/interfaces.py
-Products/zerocms/tests.py
+Products/zerocms/tests/__init__.py
+Products/zerocms/tests/layer.py
+Products/zerocms/tests/test_controlpanel.py
+Products/zerocms/tests/test_events.py
+Products/zerocms/tests/test_handlers.py
