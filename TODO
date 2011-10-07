@@ -1,11 +1,17 @@
 * Implementere mr.developer for å lage buildouts
 * installere i image -> se at event funker
-* Skrive kobling mot solr
-* Finne ut om en event knyttet til ATDocument vil håntere alle Zero sine content types
+* Skrive kobling mot 0ms
+# * Finne ut om en event knyttet til ATDocument vil håntere alle Zero sine content types
 * Lage test med andredokumenter
-* Finne ut hvordan vi får inn data fra dokumentet + skjema
-* Lage mapping av skjema mot datatyper til JSON
-* identifisere hvilke typer som vi får tilbake
-create:  (document, event_interface )
-* sette factory fra test
+* skrive mapper som sikrer at alle nødvendige felt blir satt
+
+#* Finne ut hvordan vi får inn data fra dokumentet + skjema
+#* Lage mapping av skjema mot datatyper til JSON
+#* identifisere hvilke typer som vi får tilbake
+#create:  (document, event_interface )
+
+#* sette factory fra test
+
+
+
 

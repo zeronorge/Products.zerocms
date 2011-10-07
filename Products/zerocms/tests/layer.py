@@ -8,10 +8,13 @@ import collective.testcaselayer.ptc
 ptc.setupPloneSite()
 
 class ZeroCMSLayer(collective.testcaselayer.ptc.BasePTCLayer):
+
     def afterSetUp(self):
         "setup product"
         self.addProfile('Products.zerocms:default')
 
 
-Layer = ZeroCMSLayer([collective.testcaselayer.ptc.ptc_layer])
+class ZeroCMSTestCase(ptc.PloneTestCase):
+    layer = ZeroCMSLayer([collective.testcaselayer.ptc.ptc_layer])
+
 

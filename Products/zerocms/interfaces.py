@@ -1,8 +1,8 @@
 # -*- coding: utf-8
+from collective.indexing.interfaces import IIndexQueueProcessor
 from zope.interface import Interface
 from zope import schema
 from zope.i18nmessageid import MessageFactory
-
 _ = MessageFactory('Products.zerocms')
 class IZeroCMS(Interface):
     ''' Interface for ZeroCMS
@@ -29,3 +29,10 @@ class IZeroCMSSettings(Interface):
                                                 default=u"Enter the URL to this site "),
                                   required=True,
                                   default=u'zerorally',)
+
+
+class IZeroCMSIndexQueueProcessor(IIndexQueueProcessor):
+    """An indexqueue handler for passing documents on to the ZeroCMS """
+
+class IRequestFactory(Interface):
+    """A simple interface for request factories"""

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<componentregistry>
+ <adapters/>
+ <utilities>
+ <!--
+  <utility
+     interface="collective.solr.interfaces.ISolrConnectionConfig"
+     factory="collective.solr.manager.SolrConnectionConfig"/>
+     -->
+  <utility
+     interface="Products.zerocms.interfaces.IRequestFactory"
+     factory="Products.zerocms.indexer.RequestFactory" />
+  <utility
+     interface="Products.zerocms.interfaces.IZeroCMSIndexQueueProcessor"
+     name="zerocms"
+     factory="Products.zerocms.indexer.ZeroCMSIndexProcessor"/>
+ </utilities>
+</componentregistry>

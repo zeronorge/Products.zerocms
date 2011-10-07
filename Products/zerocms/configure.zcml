@@ -5,6 +5,9 @@
            i18n_domain="zerocms">
 
    <include package="plone.app.registry" />
+   <include package="archetypes.schemaextender" />
+   <include package="collective.indexing" />
+
     
     <!-- Register an extension profile to make the product installable -->
     <genericsetup:registerProfile
