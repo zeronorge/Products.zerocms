@@ -1,8 +1,10 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:grok="http://namespaces.zope.org/grok"
             xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="zerocms">
 
+   <include package="plone.app.registry" />
     
     <!-- Register an extension profile to make the product installable -->
     <genericsetup:registerProfile
@@ -13,7 +15,6 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
     <grok:grok package="." />
-        <include package="plone.app.registry" />
 
     <!-- Control panel -->
     <browser:page

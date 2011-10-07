@@ -1,10 +1,12 @@
 # -*- coding: utf-8
 from zope.interface import Interface
+from zope import schema
+from zope.i18nmessageid import MessageFactory
 
+_ = MessageFactory('Products.zerocms')
 class IZeroCMS(Interface):
     ''' Interface for ZeroCMS
     '''
-
 
 class IZeroCMSSettings(Interface):
     """Global ZeroCMS settings
@@ -14,7 +16,7 @@ class IZeroCMSSettings(Interface):
     post_url = schema.TextLine(title=_(u"Url to post documents"),
                                   description=_(u"ZeroCMS post url",
                                                 default="http://localhost/ZeroCMS"),
-                                  required=true,
+                                  required=True,
                                   default=u'http://localhost/ZeroCMS',)
 
     instance_url = schema.TextLine(title=_(u"Site URL"),
