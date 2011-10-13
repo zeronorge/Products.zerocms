@@ -18,8 +18,8 @@
     <!-- Register an extension profile to make the product installable -->
     <genericsetup:registerProfile
         name="default"
-        title="seantis.dir.base"
-        description="Directory package for Plone using Dexterity"
+        title="ZeroCMS"
+        description="A Package to connect plone to ZeroCMS"
         directory="profiles/default"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
