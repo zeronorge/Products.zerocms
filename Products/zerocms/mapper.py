@@ -2,6 +2,7 @@
 from Products.Archetypes.atapi import ObjectField, StringField, FileField, TextField, DateTimeField, LinesField, IntegerField, FloatField, FixedPointField, ReferenceField, ComputedField, BooleanField, CMFObjectField,  ImageField
 from ZODB.POSException import ConflictError
 from logging import getLogger
+
 logger = getLogger('Products.zerocms.mapper')
 """TODO: Move DataMapper from indexer to here and """
 
@@ -137,10 +138,9 @@ class DataMapper(object):
                             value,className)
                 else:
                     if className is None:
-                        logger.warn("Unindexed type: %s" % type(name).__name__)
+                        logger.warn("Unindexed type: %s = %s" % (name, type(name).__name__ ))
                     else:
-                        logger.warn("Unindexed type: %s" %
-                                className)
+                        logger.warn("Unindexed type: %s = %s" % (name, className))
                     continue
                 print "%s %s" (name, className)
             if isinstance(schema[name], TextField) or isinstance(value, (str,unicode)):

@@ -5,6 +5,8 @@
   <utility
      interface="Products.zerocms.interfaces.IZeroCMSSettings"
      factory="Products.zerocms.manager.ZeroCMSSettings"/>
+
+
   <utility
      interface="Products.zerocms.interfaces.IRequestFactory"
      factory="Products.zerocms.indexer.RequestFactory" />

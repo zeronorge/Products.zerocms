@@ -1,15 +1,12 @@
 from unittest import defaultTestLoader
 
 # test-specific imports go here...
-from zope.component import queryUtility, getUtilitiesFor, provideUtility
+from zope.component import queryUtility, getUtilitiesFor, provideUtility, getUtility
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
 from collective.indexing.interfaces import IIndexQueueProcessor
 from Products.zerocms.interfaces import IZeroCMSIndexQueueProcessor, IRequestFactory, IZeroCMSSettings
 
-#from collective.solr.interfaces import ISolrConnectionConfig
-#from collective.solr.interfaces import ISolrConnectionManager
-#from collective.solr.exceptions import SolrInactiveException
-#from collective.solr.tests.utils import getData, fakehttp, fakeServer
 from mockito import *
 from transaction import commit
 from socket import error, timeout
@@ -18,6 +15,26 @@ from time import sleep
 from layer import ZeroCMSTestCase
 
 from Products.zerocms.mapper import DataMapper, requiredAttributes 
+from Products.zerocms.indexer import RequestFactory
+
+class RequestFactoryTests(ZeroCMSTestCase):
+
+    def afterSetUp(self):
+        registry = getUtility(IRegistry)
+        settings = registry.forInterface(IZeroCMSSettings, check=False)
+        settings.post_url = u"http://"
+    def makeRequest(self):
+        return mock()
+
+    def test_save(self):
+        factory = RequestFactory()
+        request = mock()
+        factory.getRequests = lambda: request
+        factory.save({'id' : 22})
+#        verifyZeroInteractions(request)
+
+        verify(request).post(u"http://", '{"id": 22}')
+
 
 class IndexingTests(ZeroCMSTestCase):
 
@@ -28,14 +45,16 @@ class IndexingTests(ZeroCMSTestCase):
     def afterSetUp(self):
         self.savedData = None
         self.folder.unmarkCreationFlag()    # stop LinguaPlone from renaming
-        self.config = queryUtility(IZeroCMSSettings)
-        self.config.instance_id = "test_"
-        self.config.instance_url= "http://test.com"
         self.factory = queryUtility(IRequestFactory)
         if self.factory is None:
             raise Exception("No factory created")
         self.factory.save= self.save
         self.expData = '{"locallyAllowedTypes": [], "description": "", "language": "en", "title": "Foo", "rights": "", "id": "test_user_1_", "contributors": [], "immediatelyAddableTypes": [], "creators": [], "constrainTypesMode": -1, "subject": []}'
+
+        registry = getUtility(IRegistry)
+        self.config = registry.forInterface(IZeroCMSSettings, check=False)
+        self.config.instance_id = u"test_"
+        self.config.instance_url= u"http://test.com"
 
     def beforeTearDown(self):
         pass
@@ -48,7 +67,7 @@ class IndexingTests(ZeroCMSTestCase):
         self.assertEqual(self.folder.Title(), 'Foo')
         self.assertTrue(self.savedData is not None)
         # 37 UUID + 5 instance_id
-        self.assertEquals(len(self.savedData['ID']) ,42)
+        self.assertEquals(len(self.savedData['ID']) ,42,msg="ID: %s - len %d" % (self.savedData['ID'], len(self.savedData['ID'])))
         self.assertEquals(self.savedData['url'] ,  "http://test.com/plone/Members/test_user_1_")
 
         for item in requiredAttributes:

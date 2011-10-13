@@ -8,7 +8,7 @@ class IZeroCMS(Interface):
     ''' Interface for ZeroCMS
     '''
 
-class IZeroCMSSchema(Interface):
+class IZeroCMSSettings(Interface):
     """Global ZeroCMS settings
        @author: Tarjei Huse (tarjei@scanmine.com)
        """
@@ -29,11 +29,6 @@ class IZeroCMSSchema(Interface):
                                                 default=u"Enter the URL to this site "),
                                   required=True,
                                   default=u'zerorally',)
-
-   
-class IZeroCMSSettings(IZeroCMSSchema):
-    """ configuration value object """
-
 
 class IZeroCMSIndexQueueProcessor(IIndexQueueProcessor):
     """An indexqueue handler for passing documents on to the ZeroCMS """

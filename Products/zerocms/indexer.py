@@ -4,11 +4,14 @@ from Acquisition import aq_get
 from DateTime import DateTime
 from datetime import date, datetime
 from zope.component import getUtility, queryUtility, queryMultiAdapter
+from plone.registry.interfaces import IRegistry
+
 from zope.interface import implements
 from ZODB.POSException import ConflictError
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.CMFCatalogAware import CMFCatalogAware
 from Products.Archetypes.CatalogMultiplex import CatalogMultiplex
+
 from plone.app.content.interfaces import IIndexableObjectWrapper
 from plone.indexer.interfaces import IIndexableObject
 
@@ -18,7 +21,7 @@ from socket import error
 
 from Products.zerocms.interfaces import (
 IZeroCMSIndexQueueProcessor, IRequestFactory,
-IZeroCMSSchema, IZeroCMSSettings)
+IZeroCMSSettings)
 from Products.zerocms.mapper import DataMapper
 
 logger = getLogger('Products.zerocms.indexer')
@@ -33,15 +36,19 @@ def indexable(obj):
 class RequestFactory(object):
     implements(IRequestFactory)
 
-    def __init__(self):
-        print "\nCreating new RequestFactory\n"
-        config = queryUtility(IZeroCMSSettings)
-        if config is not None:
-            self.post_url = config.post_url
+    def getRequests(self):
+        "factory method"
+        return requests
 
     def save(self, values):
-        print "Save called with url: " + self.post_url
-        requests.post(self.post_url, json.dumps(values))
+        config = queryUtility(IZeroCMSSettings)
+        if config is not None:
+            self.post_url = config.getConfig()['post_url']
+        else:
+            raise Exception("No config defined.")
+
+        logger.info("Posting document to %s \n%s"% (self.post_url, json.dumps(values)))
+        self.getRequests().post(self.post_url, json.dumps(values))
 
 
 class ZeroCMSIndexProcessor(object):
@@ -50,10 +57,11 @@ class ZeroCMSIndexProcessor(object):
 
     def __init__(self, requestFactory=None):
         logger.info("Starting Zeo procesor")
-        self.config = queryUtility(IZeroCMSSettings)
         self.requestFactory = requestFactory
-        if requestFactory is None:
+    def getRequestFactory(self):
+        if self.requestFactory is None:
             self.requestFactory = getUtility(IRequestFactory)
+        return self.requestFactory
 
     def begin(self):
         """ called before processing of the queue is started """
@@ -67,16 +75,22 @@ class ZeroCMSIndexProcessor(object):
         """ called if processing of the queue needs to be aborted """
         pass
 
-    def index(self, obj, attributes=None):
-        print "Index called: " + repr(obj.__dict__)
+    def loadConfig(self):
+        self.config = queryUtility(IZeroCMSSettings).getConfig()
+        logger.info("Got config: " + repr(self.config) ) 
 
-        mapper = DataMapper(self.config.instance_id, self.config.instance_url)
+    def index(self, obj, attributes=None):
+        logger.info("Index called: ")
+        self.loadConfig()
+
+        mapper = DataMapper(self.config['instance_id'],
+                self.config['instance_url'])
         
 
         obj = self.wrapObject(obj)
         data= mapper.convert(obj)
         print "Got data: \n%s" % repr(data)
-        self.requestFactory.save(data)
+        self.getRequestFactory().save(data)
 
         return
     def reindex(self, obj, attributes=None):

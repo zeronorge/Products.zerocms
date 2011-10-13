@@ -8,6 +8,7 @@ DateTime
 Plone >= 4.1
 plone.app.content
 plone.app.controlpanel
+plone.app.registry
 plone.app.layout
 plone.indexer
 Products.Archetypes
