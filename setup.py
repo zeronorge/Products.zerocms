@@ -3,7 +3,6 @@ import os
 
 version = '1.0'
 
-tests_require = ['collective.testcaselayer']
 setup(name='Products.zerocms',
       version=version,
       description="zerocms import/export product",
@@ -27,9 +26,36 @@ setup(name='Products.zerocms',
           'setuptools',
           'requests', 'five.grok',
           # -*- Extra requirements: -*-
+                  'Acquisition',
+        'archetypes.schemaextender',
+        'collective.indexing >= 2.0a2',
+        'DateTime',
+        'Plone >= 4.1',
+        'plone.app.content',
+        'plone.app.controlpanel',
+        'plone.app.layout',
+        'plone.indexer',
+        'Products.Archetypes',
+        'Products.CMFCore',
+        'Products.CMFDefault',
+        'Products.GenericSetup',
+        'setuptools',
+        'transaction',
+        'ZODB3',
+        'zope.component',
+        'zope.formlib',
+        'zope.interface',
+        'zope.publisher',
+        'zope.schema',
+        'Zope2 >= 2.13',
       ],
-      tests_require=tests_require,
-      extras_require={'tests': tests_require},
+        extras_require = {'test': [
+        'cElementTree',
+        'collective.testcaselayer',
+        'Products.LinguaPlone >=3.1a1',
+        'Products.PloneTestCase',
+      ]},
+
       entry_points="""
       # -*- Entry points: -*-
       """,

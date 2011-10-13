@@ -8,7 +8,7 @@ class IZeroCMS(Interface):
     ''' Interface for ZeroCMS
     '''
 
-class IZeroCMSSettings(Interface):
+class IZeroCMSSchema(Interface):
     """Global ZeroCMS settings
        @author: Tarjei Huse (tarjei@scanmine.com)
        """
@@ -29,6 +29,10 @@ class IZeroCMSSettings(Interface):
                                                 default=u"Enter the URL to this site "),
                                   required=True,
                                   default=u'zerorally',)
+
+   
+class IZeroCMSSettings(IZeroCMSSchema):
+    """ configuration value object """
 
 
 class IZeroCMSIndexQueueProcessor(IIndexQueueProcessor):

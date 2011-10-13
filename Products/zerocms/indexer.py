@@ -1,5 +1,5 @@
 from logging import getLogger
-import json
+import json, requests
 from Acquisition import aq_get
 from DateTime import DateTime
 from datetime import date, datetime
@@ -18,10 +18,10 @@ from socket import error
 
 from Products.zerocms.interfaces import (
 IZeroCMSIndexQueueProcessor, IRequestFactory,
-IZeroCMSSettings)
+IZeroCMSSchema, IZeroCMSSettings)
+from Products.zerocms.mapper import DataMapper
 
 logger = getLogger('Products.zerocms.indexer')
-
 
 def indexable(obj):
     """ indicate whether a given object should be indexed; for now only
@@ -30,150 +30,17 @@ def indexable(obj):
         isinstance(obj, CMFCatalogAware)
 
 
-def datehandler(value):
-    # TODO: we might want to handle datetime and time as well;
-    # check the enfold.solr implementation
-    if value is None:
-        raise AttributeError
-    if isinstance(value, str) and not value.endswith('Z'):
-        value = DateTime(value)
-    if isinstance(value, DateTime):
-        v = value.toZone('UTC')
-        value = '%04d-%02d-%02dT%02d:%02d:%06.3fZ' % (v.year(),
-            v.month(), v.day(), v.hour(), v.minute(), v.second())
-    elif isinstance(value, date):
-        # Convert a timezone aware timetuple to a non timezone aware time
-        # tuple representing utc time. Does nothing if object is not
-        # timezone aware
-        value = datetime(*value.utctimetuple()[:7])
-        value = '%s.%03dZ' % (value.strftime('%Y-%m-%dT%H:%M:%S'), value.microsecond % 1000)
-    return value
-
-
-
-handlers = {
-    'DateTimeField': datehandler 
-}
-
-
-def boost_values(obj, data):
-    """ calculate boost values using a method or skin script;  returns
-        a dictionary with the values or `None` """
-    boost_index_getter = aq_get(obj, 'solr_boost_index_values', None)
-    if boost_index_getter is not None:
-        return boost_index_getter(data)
-
-class DataManager(object):
-
-    
-
-    def __init__(self):
-        self.requiredAttributes ={
-            'dokumentID': "",
-                'ID': "",
-                'type': "",
-                'body': "",
-                'author': "",
-                'dateCreated': "",
-                'dateUpdated': "",
-                'url': "",
-                'title': "",
-                'source': "",
-                'tags': []
-        }
-
-    def convert(self, obj):
-        data = self.getData(obj)
-
-        # cleanup data
-
-        data['ID'] = data['id']
-        del(data['id'])
-
-        data['ID'] = obj.UID
-        print repr(obj.contributors)
-        data['type'] = obj.__class__.__name__
-        data['url'] = '/'.join(obj.getPhysicalPath())
-
-        data['dateCreated'] = obj.created().ISO8601()
-        data['dateUpdated'] = obj.modified().ISO8601()
-
-#        self.copyAndDel(data,"create", "dateCreated")
-#        self.copyAndDel(data,"create", "dateUpdated")
-#        self.copyAndDel(data,"create", "contributors")
-
-
-        for key in self.requiredAttributes.keys():
-            if not key in data:
-                print "Missing item: %s"% key
-        for key in data.keys():
-            if key not in self.requiredAttributes.keys():
-                print "K :"  + key
-        return data
-
-    def copyAndDel(self, data, _from, _to):
-        data[_to] = data[_from]
-        del(data[_from])
-
-    def getData(self, obj):
-        schema = obj.schema
-        if schema is None:
-            print "no schema defined"
-            logger.warn("No schema defined for object: " +
-                    repr(obj))
-            return {}, ()
-        attributes = schema.keys()
-        data, marker = {}, []
-        for name in attributes:
-            try:
-                value = getattr(obj, name)
-                if callable(value):
-                    value = value()
-            except ConflictError:
-                raise
-            except AttributeError:
-                continue
-            except Exception:
-                logger.exception('Error occured while getting data for '
-                    'indexing!')
-                continue
-            if not isinstance(value, (str, int,
-                    tuple,unicode)):
-                _type = type(value)
-                className = None
-                if (_type == 'instance'):
-                    className = value.__class__.__name__
-
-                if _type == 'instance' and \
-                          className in handlers:
-                    value = mapper[className]()
-
-                    print "converted %s: %s %s" %(name,
-                            value,className)
-                else:
-                    if className is None:
-                        logger.warn("Unindexed type: %s" % type(name).__name__)
-                    else:
-                        logger.warn("Unindexed type: %s" %
-                                className)
-                    continue
-
-            if value is not None:
-                data[name] = value
-        #missing = set(schema.requiredFields) - set(data.keys())
-        return data
-
-
-
 class RequestFactory(object):
     implements(IRequestFactory)
 
     def __init__(self):
+        print "\nCreating new RequestFactory\n"
         config = queryUtility(IZeroCMSSettings)
         if config is not None:
             self.post_url = config.post_url
 
     def save(self, values):
+        print "Save called with url: " + self.post_url
         requests.post(self.post_url, json.dumps(values))
 
 
@@ -182,14 +49,28 @@ class ZeroCMSIndexProcessor(object):
     implements(IZeroCMSIndexQueueProcessor)
 
     def __init__(self, requestFactory=None):
+        logger.info("Starting Zeo procesor")
+        self.config = queryUtility(IZeroCMSSettings)
         self.requestFactory = requestFactory
         if requestFactory is None:
             self.requestFactory = getUtility(IRequestFactory)
 
-    def index(self, obj, attributes=None):
-        print "Index called: " + repr(obj)
+    def begin(self):
+        """ called before processing of the queue is started """
+        pass
 
-        mapper = DataManager()
+    def commit(self):
+        """ called after processing of the queue has ended """
+        pass
+
+    def abort(self):
+        """ called if processing of the queue needs to be aborted """
+        pass
+
+    def index(self, obj, attributes=None):
+        print "Index called: " + repr(obj.__dict__)
+
+        mapper = DataMapper(self.config.instance_id, self.config.instance_url)
         
 
         obj = self.wrapObject(obj)
@@ -231,8 +112,6 @@ class ZeroCMSIndexProcessor(object):
             except (SolrException, error):
                 logger.exception('exception during unindexing %r', obj)
 
-    def begin(self):
-        pass
 
     def getConnection(self):
         if self.requestFactory is None:
@@ -264,52 +143,3 @@ class ZeroCMSIndexProcessor(object):
                 wrapper.update(wft.getCatalogVariablesFor(obj))
         return wrapper
 
-    def getData(self, obj, attributes=None):
-
-        schema = obj.schema
-
-        if schema is None:
-            print "no schema defined"
-            return {}, ()
-        if attributes is None:
-            attributes = schema.keys()
-        obj = self.wrapObject(obj)
-        data, marker = {}, []
-        for name in attributes:
-            try:
-                value = getattr(obj, name)
-                if callable(value):
-                    value = value()
-            except ConflictError:
-                raise
-            except AttributeError:
-                continue
-            except Exception:
-                logger.exception('Error occured while getting data for '
-                    'indexing!')
-                continue
-            if not isinstance(value, (str, int,
-                    tuple,unicode)):
-                _type = type(value)
-                className = None
-                if (_type == 'instance'):
-                    className = value.__class__.__name__
-
-                if _type == 'instance' and \
-                          className in handlers:
-                    value = mapper[className]()
-
-                    print "converted %s: %s %s" %(name,
-                            value,className)
-                else:
-                    if className is None:
-                        logger.warn("Unindexed type: %s" % type(name).__name__)
-                    else:
-                        logger.warn("Unindexed type: %s" %
-                                className)
-                    continue
-
-            if value is not None:
-                data[name] = value
-        #missing = set(schema.requiredFields) - set(data.keys())
-        return data, []

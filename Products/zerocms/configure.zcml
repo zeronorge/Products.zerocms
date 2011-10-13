@@ -1,12 +1,18 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:grok="http://namespaces.zope.org/grok"
             xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+            xmlns:five="http://namespaces.zope.org/five"
             xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="zerocms">
 
    <include package="plone.app.registry" />
    <include package="archetypes.schemaextender" />
    <include package="collective.indexing" />
+   <five:registerPackage package="." />
+
+   <!--
+    <grok:grok package="." />
+    -->
 
     
     <!-- Register an extension profile to make the product installable -->
@@ -17,7 +23,6 @@
         directory="profiles/default"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
-    <grok:grok package="." />
 
     <!-- Control panel -->
     <browser:page

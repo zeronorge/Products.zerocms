@@ -6,8 +6,6 @@ from Products.zerocms.handler import *
 import requests, StringIO, json
 
 class TestSolrUpdater(unittest.TestCase):
-    def test_init(self):
-        assert(False)
 
     def test_document_updated(self):
         df = ZeroCMSDocumentUpdater({})

@@ -14,8 +14,10 @@ Products/zerocms/handler.py
 Products/zerocms/indexer.py
 Products/zerocms/interfaces.py
 Products/zerocms/manager.py
+Products/zerocms/mapper.py
 Products/zerocms/tests/__init__.py
 Products/zerocms/tests/layer.py
 Products/zerocms/tests/test_controlpanel.py
 Products/zerocms/tests/test_handlers.py
 Products/zerocms/tests/test_integration.py
+Products/zerocms/tests/test_mapper.py

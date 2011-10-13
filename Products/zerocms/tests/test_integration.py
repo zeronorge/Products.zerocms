@@ -4,7 +4,7 @@ from unittest import defaultTestLoader
 from zope.component import queryUtility, getUtilitiesFor, provideUtility
 from Products.CMFCore.utils import getToolByName
 from collective.indexing.interfaces import IIndexQueueProcessor
-from Products.zerocms.interfaces import IZeroCMSIndexQueueProcessor, IRequestFactory
+from Products.zerocms.interfaces import IZeroCMSIndexQueueProcessor, IRequestFactory, IZeroCMSSettings
 
 #from collective.solr.interfaces import ISolrConnectionConfig
 #from collective.solr.interfaces import ISolrConnectionManager
@@ -16,20 +16,30 @@ from socket import error, timeout
 from time import sleep
 
 from layer import ZeroCMSTestCase
+
+from Products.zerocms.mapper import DataMapper, requiredAttributes 
+
 class IndexingTests(ZeroCMSTestCase):
 
     def save(self, data):
+        print "save(): data recived: " + repr(data)
         self.savedData = data
 
     def afterSetUp(self):
         self.savedData = None
         self.folder.unmarkCreationFlag()    # stop LinguaPlone from renaming
+        self.config = queryUtility(IZeroCMSSettings)
+        self.config.instance_id = "test_"
+        self.config.instance_url= "http://test.com"
         self.factory = queryUtility(IRequestFactory)
+        if self.factory is None:
+            raise Exception("No factory created")
         self.factory.save= self.save
         self.expData = '{"locallyAllowedTypes": [], "description": "", "language": "en", "title": "Foo", "rights": "", "id": "test_user_1_", "contributors": [], "immediatelyAddableTypes": [], "creators": [], "constrainTypesMode": -1, "subject": []}'
 
     def beforeTearDown(self):
         pass
+
 
     def testIndexObject(self):
         self.folder.processForm(values={'title': 'Foo'})    # updating sends
@@ -37,14 +47,20 @@ class IndexingTests(ZeroCMSTestCase):
         commit()                        # indexing happens on commit
         self.assertEqual(self.folder.Title(), 'Foo')
         self.assertTrue(self.savedData is not None)
-        self.assertEquals(len(self.savedData['ID']) ,32)
-        self.assertEquals(self.savedData['url'] , "/plone/Members/test_user_1_")
+        # 37 UUID + 5 instance_id
+        self.assertEquals(len(self.savedData['ID']) ,42)
+        self.assertEquals(self.savedData['url'] ,  "http://test.com/plone/Members/test_user_1_")
 
-    def test_callIndexing(self):
+        for item in requiredAttributes:
+            self.assertTrue(item in self.savedData, msg="Missing %s in saved data" % item)
+
+        self.assertNotEquals(self.savedData['body'], "")
+
+    def _test_callIndexing(self):
         indexProcessor = queryUtility(IZeroCMSIndexQueueProcessor, name="zerocms")
         indexProcessor.index(self.folder, attributes = {'url' : 'test'})
 
-        self.assertEquals(self.savedData['ID'] , "test2")
+        self.assertEquals(len(self.savedData['ID']) ,36)
 
     def _testNoIndexingWithMethodOverride(self):
         self.setRoles(['Manager'])
@@ -66,16 +82,10 @@ class IndexingTests(ZeroCMSTestCase):
     def _testNoIndexingForNonCatalogAwareContent(self):
         self.setRoles(['Manager'])
         output = []
-        connection = self.proc.getConnection()
-        responses = [getData('dummy_response.txt')] * 42    # set up enough...
-        output = fakehttp(connection, *responses)           # fake responses
         ref = self.folder.addReference(self.portal.news, 'referencing')
         self.folder.processForm(values={'title': 'Foo'})
         commit()                        # indexing happens on commit
-        self.assertNotEqual(repr(output).find('Foo'), -1, 'title not found')
-        self.assertEqual(repr(output).find(ref.UID()), -1, 'reference found?')
-        self.assertEqual(repr(output).find('at_references'), -1,
-            '`at_references` found?')
+        self.assertTrue(self.savedData is None)
 
 class UtilityTests(ZeroCMSTestCase):
 

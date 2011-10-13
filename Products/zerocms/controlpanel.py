@@ -2,7 +2,7 @@
 
 from plone.app.registry.browser import controlpanel
 
-from Products.zerocms.interfaces import IZeroCMSSettings, _
+from Products.zerocms.interfaces import IZeroCMSSettings, IZeroCMSSchema, _
 
 
 class ZeroCMSSettingsEditForm(controlpanel.RegistryEditForm):
@@ -10,7 +10,7 @@ class ZeroCMSSettingsEditForm(controlpanel.RegistryEditForm):
        @author: Tarjei Huse (tarjei@scanmine.com)
        """
 
-    schema = IZeroCMSSettings
+    schema = IZeroCMSSchema
     label = _(u"ZeroCMS settings")
     description = _(u"""""")
 

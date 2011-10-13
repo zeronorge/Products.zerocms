@@ -2,11 +2,9 @@
 <componentregistry>
  <adapters/>
  <utilities>
- <!--
   <utility
-     interface="collective.solr.interfaces.ISolrConnectionConfig"
-     factory="collective.solr.manager.SolrConnectionConfig"/>
-     -->
+     interface="Products.zerocms.interfaces.IZeroCMSSettings"
+     factory="Products.zerocms.manager.ZeroCMSSettings"/>
   <utility
      interface="Products.zerocms.interfaces.IRequestFactory"
      factory="Products.zerocms.indexer.RequestFactory" />

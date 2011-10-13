@@ -2,7 +2,7 @@ from logging import getLogger
 from persistent import Persistent
 from zope.interface import implements
 from zope.component import getUtility
-from Products.zerocms.interfaces import IZeroCMSSettings
+from Products.zerocms.interfaces import IZeroCMSSchema, IZeroCMSSettings
 #from Products.zerocms.interfaces import IHTTPConnectionManager
 
 #from Products.zerocms.solr import SolrConnection
@@ -38,4 +38,5 @@ class ZeroCMSSettings(BaseZeroCMSSettings, Persistent):
     def getId(self):
         """ return a unique id to be used with GenericSetup """
         return 'zerocms'
+
 

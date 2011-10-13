@@ -6,11 +6,10 @@ from plone.registry import Registry
 from Products.CMFCore.utils import getToolByName
 
 from Products.zerocms.interfaces import IZeroCMSSettings
-from Products.zerocms.tests.layer import Layer
+from Products.zerocms.tests.layer import ZeroCMSLayer, ZeroCMSTestCase 
 
-class RegistryTest(ptc.PloneTestCase):
+class RegistryTest(ZeroCMSTestCase):
 
-    layer = Layer
 
     def afterSetUp(self):
         # Set up the zerocms settings registry
@@ -34,15 +33,15 @@ class RegistryTest(ptc.PloneTestCase):
     def test_record_zerocms_key(self):
         # Test that the zerocms_key record is in the control panel
         record_post_url = self.registry.records[
-            'collective.zerocms.interfaces.IZeroCMSSettings.post_url']
+            'Products.zerocms.interfaces.IZeroCMSSettings.post_url']
         self.failUnless('post_url' in IZeroCMSSettings)
-        self.assertEquals(record_post_url.value, u"")
+        self.assertEquals(record_post_url.value, u"http://localhost/ZeroCMS")
 
     def test_record_instance_url(self):
         record_instance_url = self.registry.records[
-            'collective.zerocms.interfaces.IZeroCMSSettings.instance_url']        
+            'Products.zerocms.interfaces.IZeroCMSSettings.instance_url']        
         self.failUnless('instance_url' in IZeroCMSSettings)
-        self.assertEquals(record_instance_url.value, u"")
+        self.assertEquals(record_instance_url.value, u"http://localhost:8080/zerorally")
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
