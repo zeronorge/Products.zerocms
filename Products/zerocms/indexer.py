@@ -100,42 +100,7 @@ class ZeroCMSIndexProcessor(object):
         self.index(obj, attributes)
 
     def unindex(self, obj):
-        conn = self.getConnection()
-        if conn is not None:
-            schema = self.requestFactory.getSchema()
-            if schema is None:
-                msg = 'unable to fetch schema, skipping unindexing of %r'
-                logger.warning(msg, obj)
-                return
-            uniqueKey = schema.get('uniqueKey', None)
-            if uniqueKey is None:
-                msg = 'schema is missing unique key, skipping unindexing of %r'
-                logger.warning(msg, obj)
-                return
-            data, missing = self.getData(obj, attributes=[uniqueKey])
-            prepareData(data)
-            if not uniqueKey in data:
-                msg = 'Can not unindex: no unique key for object %r'
-                logger.info(msg, obj)
-                return
-            data_key = data[uniqueKey]
-            if data_key is None:
-                msg = 'Can not unindex: `None` unique key for object %r'
-                logger.info(msg, obj)
-                return
-            try:
-                logger.debug('unindexing %r (%r)', obj, data)
-                conn.delete(id=data_key)
-            except (SolrException, error):
-                logger.exception('exception during unindexing %r', obj)
-
-
-    def getConnection(self):
-        if self.requestFactory is None:
-            self.requestFactory = queryUtility(ISolrConnectionManager)
-        if self.requestFactory is not None:
-            self.requestFactory.setIndexTimeout()
-            return self.requestFactory.getConnection()
+        raise Exception("Not implemented yet!")
 
     def wrapObject(self, obj):
         """ wrap object with an "IndexableObjectWrapper` (for Plone < 3.3) or

@@ -1,0 +1,61 @@
+/* styles related to solr integration */
+
+#portal-searchfacets {
+  background-color: #ddd;
+  padding: 0.5em;
+  min-width: 20%;
+  float: right;
+}
+
+* html #portal-searchfacets {
+  width: 20%;
+}
+
+#portal-searchfacets h4 {
+  font-weight: normal;
+  margin: 0;
+  border-bottom: 1px dotted grey;
+}
+
+#portal-searchfacets h5 {
+  margin: 0;
+  padding-top: 1em;
+  clear: both;
+}
+
+#portal-searchfacets dl {
+  margin: 0.2em 0 0 0;
+}
+
+#portal-searchfacets dt {
+  font-weight: normal;
+  font-size: 90%;
+  float: left;
+  clear: both;
+  white-space: nowrap;
+}
+
+#portal-searchfacets dd {
+  font-size: 90%;
+  float: left;
+  line-height: normal;
+  margin: 0 0 0 1em;
+}
+
+#portal-searchfacets #selected-facets {
+  padding: 0.5em 0 0 0;
+}
+
+#portal-searchfacets #selected-facets a {
+  text-decoration: none;
+}
+
+.showMoreHidden {
+  display: none;
+}
+
+.showMoreLink {
+  font-size: 90%;
+  display: block;
+  clear: both;
+}

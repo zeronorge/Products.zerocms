@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="zerocms">
+
+  <browser:resourceDirectory
+      name="Products.zerocms.images"
+      directory="images" />
+
+  <browser:resourceDirectory
+      name="Products.zerocms.resources"
+      directory="resources" />
+
+  <browser:page
+      for="*"
+      name="zerocms-maintenance"
+      class=".maintenance.ZeroCMSMaintenanceView"
+      allowed_interface="..interfaces.IZeroCMSMaintenanceView"
+      permission="cmf.ManagePortal" />
+
+</configure>

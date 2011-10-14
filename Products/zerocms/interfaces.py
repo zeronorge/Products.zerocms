@@ -36,3 +36,10 @@ class IZeroCMSIndexQueueProcessor(IIndexQueueProcessor):
 
 class IRequestFactory(Interface):
     """A simple interface for request factories"""
+
+class IZeroCMSMaintenanceView(Interface):
+    """ maintenance view for clearing, re-indexing content etc """
+
+    def reindex(batch=1000, skip=0):
+        """ find all contentish objects (meaning all objects derived from one
+            of the catalog mixin classes) and (re)indexes them """
