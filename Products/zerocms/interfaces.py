@@ -17,7 +17,7 @@ class IZeroCMSSettings(Interface):
                                   description=_(u"ZeroCMS post url",
                                                 default="http://localhost/ZeroCMS"),
                                   required=True,
-                                  default=u'http://localhost/ZeroCMS',)
+                                  default=u'http://localhost/ZeroCMS/api/document/add',)
 
     instance_url = schema.TextLine(title=_(u"Site URL"),
                                   description=_(u"ZeroCMS site url",
@@ -30,6 +30,7 @@ class IZeroCMSSettings(Interface):
                                   required=True,
                                   default=u'zerorally',)
 
+    
 class IZeroCMSIndexQueueProcessor(IIndexQueueProcessor):
     """An indexqueue handler for passing documents on to the ZeroCMS """
 

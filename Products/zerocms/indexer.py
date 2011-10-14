@@ -48,7 +48,10 @@ class RequestFactory(object):
             raise Exception("No config defined.")
 
         logger.info("Posting document to %s \n%s"% (self.post_url, json.dumps(values)))
-        self.getRequests().post(self.post_url, json.dumps(values))
+        res = self.getRequests().post(self.post_url, json.dumps(values))
+        if (res.status_code != 200):
+            logger.error("Posting document to %s produced error: %d\n%s" % 
+                    (self.post_url, res.status_code, res.content))
 
 
 class ZeroCMSIndexProcessor(object):

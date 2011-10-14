@@ -39,7 +39,7 @@ def boost_values(obj, data):
     if boost_index_getter is not None:
         return boost_index_getter(data)
 requiredAttributes ={
-            'dokumentID': "",
+            'documentId': "",
             'ID': "",
             'type': "",
             'body': "",
@@ -61,7 +61,7 @@ class DataMapper(object):
         data = self.getData(obj)
 
         # cleanup data
-        data['dokumentID'] = obj.UID
+        data['documentId'] = obj.UID
         data['ID'] = obj.UID + "-" + self.instance_id
         data['source'] = self.instance_id
         del(data['id'])
