@@ -40,7 +40,7 @@ def boost_values(obj, data):
         return boost_index_getter(data)
 requiredAttributes ={
             'documentId': "",
-            'ID': "",
+            'id': "",
             'type': "",
             'body': "",
             'author': "",
@@ -56,15 +56,16 @@ class DataMapper(object):
     def __init__(self, instance_id, instance_url):
         self.instance_url = instance_url
         self.instance_id = instance_id
+        self.debug = False
 
     def convert(self, obj):
         data = self.getData(obj)
 
+        # print "Documentid: " + data['id']
         # cleanup data
         data['documentId'] = obj.UID
-        data['ID'] = obj.UID + "-" + self.instance_id
+        data['id'] = obj.UID + "-" + self.instance_id
         data['source'] = self.instance_id
-        del(data['id'])
         data['type'] = obj.__class__.__name__
         data['url'] = self.instance_url +  '/'.join(obj.getPhysicalPath())
 
@@ -78,17 +79,17 @@ class DataMapper(object):
         # getOwner returns plineUser
         data['author'] = obj.getOwner().getId()
 
-        print "author: \n" + data['author'] 
+#        print "author: \n" + data['author'] 
 #        self.copyAndDel(data,"create", "dateCreated")
 #        self.copyAndDel(data,"create", "dateUpdated")
 #        self.copyAndDel(data,"create", "contributors")
-
-        for key in requiredAttributes.keys():
-            if not key in data:
-                print "Missing item: %s"% key
-        for key in data.keys():
-            if key not in requiredAttributes.keys():
-                print ""  + key
+        if self.debug:
+            for key in requiredAttributes.keys():
+                if not key in data:
+                    print "Missing item: %s"% key
+            for key in data.keys():
+                if key not in requiredAttributes.keys():
+                    print ""  + key
         return data
 
     def copyAndDel(self, data, _from, _to):

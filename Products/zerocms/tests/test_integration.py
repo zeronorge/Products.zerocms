@@ -16,6 +16,9 @@ from layer import ZeroCMSTestCase
 
 from Products.zerocms.mapper import DataMapper, requiredAttributes 
 from Products.zerocms.indexer import RequestFactory
+class Bunch:
+    def __init__(self, **kwds):
+        self.__dict__.update(kwds)
 
 class RequestFactoryTests(ZeroCMSTestCase):
 
@@ -29,6 +32,8 @@ class RequestFactoryTests(ZeroCMSTestCase):
     def test_save(self):
         factory = RequestFactory()
         request = mock()
+        requestResponse = Bunch(status_code = 200, content="testContent") 
+        when(request).post(any(), any()).thenReturn(requestResponse)
         factory.getRequests = lambda: request
         factory.save({'id' : 22})
 #        verifyZeroInteractions(request)
@@ -39,7 +44,7 @@ class RequestFactoryTests(ZeroCMSTestCase):
 class IndexingTests(ZeroCMSTestCase):
 
     def save(self, data):
-        print "save(): data recived: " + repr(data)
+        #print "save(): data recived: " + repr(data)
         self.savedData = data
 
     def afterSetUp(self):
@@ -67,7 +72,8 @@ class IndexingTests(ZeroCMSTestCase):
         self.assertEqual(self.folder.Title(), 'Foo')
         self.assertTrue(self.savedData is not None)
         # 37 UUID + 5 instance_id
-        self.assertEquals(len(self.savedData['ID']) ,42,msg="ID: %s - len %d" % (self.savedData['ID'], len(self.savedData['ID'])))
+        print repr(self.savedData)
+        self.assertEquals(len(self.savedData['id']) ,42,msg="ID: %s - len %d" % (self.savedData['id'], len(self.savedData['id'])))
         self.assertEquals(self.savedData['url'] ,  "http://test.com/plone/Members/test_user_1_")
 
         for item in requiredAttributes:
@@ -79,7 +85,7 @@ class IndexingTests(ZeroCMSTestCase):
         indexProcessor = queryUtility(IZeroCMSIndexQueueProcessor, name="zerocms")
         indexProcessor.index(self.folder, attributes = {'url' : 'test'})
 
-        self.assertEquals(len(self.savedData['ID']) ,36)
+        self.assertEquals(len(self.savedData['id']) ,36)
 
     def _testNoIndexingWithMethodOverride(self):
         self.setRoles(['Manager'])

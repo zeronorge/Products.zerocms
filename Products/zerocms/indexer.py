@@ -92,7 +92,7 @@ class ZeroCMSIndexProcessor(object):
 
         obj = self.wrapObject(obj)
         data= mapper.convert(obj)
-        print "Got data: \n%s" % repr(data)
+        #print "Got data: \n%s" % repr(data)
         self.getRequestFactory().save(data)
 
         return
