@@ -58,7 +58,7 @@ class DataMapper(object):
         self.instance_id = instance_id
         self.debug = False
 
-    def convert(self, obj):
+    def convert(self, obj, _type):
         data = self.getData(obj)
 
         # print "Documentid: " + data['id']
@@ -66,7 +66,7 @@ class DataMapper(object):
         data['documentId'] = obj.UID
         data['id'] = obj.UID + "-" + self.instance_id
         data['source'] = self.instance_id
-        data['type'] = obj.__class__.__name__
+        data['type'] = _type
         data['url'] = self.instance_url +  '/'.join(obj.getPhysicalPath())
 
         data['dateCreated'] = obj.created().ISO8601()

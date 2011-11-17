@@ -80,6 +80,7 @@ class IndexingTests(ZeroCMSTestCase):
             self.assertTrue(item in self.savedData, msg="Missing %s in saved data" % item)
 
         self.assertNotEquals(self.savedData['body'], "")
+        self.assertEquals(self.savedData['type'], "ATFolder")
 
     def _test_callIndexing(self):
         indexProcessor = queryUtility(IZeroCMSIndexQueueProcessor, name="zerocms")

@@ -6,7 +6,7 @@ from datetime import date, datetime
 from zope.component import getUtility, queryUtility, queryMultiAdapter
 from plone.registry.interfaces import IRegistry
 
-from zope.interface import implements
+from zope.interface import implements, implementedBy, providedBy, classImplementsOnly, directlyProvidedBy
 from ZODB.POSException import ConflictError
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.CMFCatalogAware import CMFCatalogAware
@@ -23,6 +23,8 @@ from Products.zerocms.interfaces import (
 IZeroCMSIndexQueueProcessor, IRequestFactory,
 IZeroCMSSettings)
 from Products.zerocms.mapper import DataMapper
+
+
 
 logger = getLogger('Products.zerocms.indexer')
 
@@ -89,9 +91,8 @@ class ZeroCMSIndexProcessor(object):
         mapper = DataMapper(self.config['instance_id'],
                 self.config['instance_url'])
         
-
-        obj = self.wrapObject(obj)
-        data= mapper.convert(obj)
+        
+        data= mapper.convert(self.wrapObject(obj), obj.__class__.__name__)
         #print "Got data: \n%s" % repr(data)
         self.getRequestFactory().save(data)
 
@@ -106,6 +107,8 @@ class ZeroCMSIndexProcessor(object):
         """ wrap object with an "IndexableObjectWrapper` (for Plone < 3.3) or
             adapt it to `IIndexableObject` (for Plone >= 3.3), see
             `CMFPlone...CatalogTool.catalog_object` for some background """
+
+
         wrapper = obj
         # first try the new way, i.e. using `plone.indexer`...
         catalog = getToolByName(obj, 'portal_catalog', None)
