@@ -15,7 +15,7 @@ class IZeroCMSSettings(Interface):
 
     post_url = schema.TextLine(title=_(u"Url to post documents"),
                                   description=_(u"ZeroCMS post url",
-                                                default="http://localhost/ZeroCMS"),
+                                                default="url.to.ZeroCMS/api/document/add"),
                                   required=True,
                                   default=u'http://localhost/ZeroCMS/api/document/add',)
 

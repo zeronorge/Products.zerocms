@@ -35,7 +35,7 @@ class RegistryTest(ZeroCMSTestCase):
         record_post_url = self.registry.records[
             'Products.zerocms.interfaces.IZeroCMSSettings.post_url']
         self.failUnless('post_url' in IZeroCMSSettings)
-        self.assertEquals(record_post_url.value, u"http://localhost/ZeroCMS")
+        self.assertEquals(record_post_url.value, u"http://localhost/ZeroCMS/api/document/add")
 
     def test_record_instance_url(self):
         record_instance_url = self.registry.records[
