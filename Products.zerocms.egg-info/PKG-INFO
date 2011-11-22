@@ -18,6 +18,13 @@ Description: Introduction
         To run reindex:
         http://localhost:7070/zerorally/@@zerocms-maintenance/reindex
         
+        
+        To install:
+        
+        Add to your buildout:
+        
+        
+        
         Changelog
         =========
         

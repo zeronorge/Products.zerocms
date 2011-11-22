@@ -11,8 +11,24 @@ To run reindex:
 http://localhost:7070/zerorally/@@zerocms-maintenance/reindex
 
 
-To install:
+
+
+## To install:
 
 Add to your buildout:
+
+
+
+### To run tests:
+
+Install buildout:
+    apt-get install python-zc.buildout
+
+Run buildout:
+    buildout ./buildout.cfg
+
+Use the testrunner from your plone instance:
+
+../../bin/test Products.zerocms
 
 

@@ -12,7 +12,7 @@ from Products.zerocms.interfaces import IZeroCMSMaintenanceView, IZeroCMSIndexQu
 from Products.zerocms.indexer import IRequestFactory
 from collective.solr.indexer import indexable
 
-logger = getLogger('collective.solr.maintenance')
+logger = getLogger('Products.zerocms.maintenance')
 MAX_ROWS = 1000000000
 
 
