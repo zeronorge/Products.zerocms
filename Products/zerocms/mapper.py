@@ -144,14 +144,18 @@ class DataMapper(object):
                         logger.warn("Unindexed type: %s = %s" % (name, className))
                     continue
                 print "%s %s" (name, className)
-            if isinstance(schema[name], TextField) or isinstance(value, (str,unicode)):
+            # ensure we only deal with unicode attributes
+            if isinstance(value, str):
+                value = unicode(value) 
+
+            if isinstance(schema[name], TextField) or isinstance(value, (unicode)):
                 bodyParts.append(value)
 
             if value is not None:
                 data[name] = value
         #missing = set(schema.requiredFields) - set(data.keys())
         if not 'body' in data:
-            data['body'] = "\n".join(bodyParts)
+            data['body'] = u"\n".join(bodyParts)
         return data
 
 
