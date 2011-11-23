@@ -50,5 +50,5 @@ class DataMapperTest(unittest.TestCase):
         obj.title = u"testø".encode("utf-8")
         obj.id ="my id"
         data = self.mapper.getData(obj) 
-        self.assertEquals({}, data)
+        self.assertEquals({'body': u'my id\ntest\xf8', 'tags': ['test', 'rest'], 'id': u'my id', 'title': u'test\xf8'}, data)
 

@@ -64,23 +64,6 @@ class IndexingTests(ZeroCMSTestCase):
 
     def beforeTearDown(self):
         pass
-    def testIndexContainsUtf8Str(self):
-        self.folder.processForm(values={'title': str('Gøril Andreasen'),'subject' : 'Gøril Andrease'})    # updating sends
-        self.assertEquals(self.folder.Title(), 'Gøril Andreasen')
-        commit()                        # indexing happens on commit
-        self.assertEqual(self.folder.Title(), 'Gøril Andreasen')
-        self.assertEquals(self.savedData, "")
-        print repr(self.savedData)
-        self.assertEquals(len(self.savedData['id']) ,42,msg="ID: %s - len %d" % (self.savedData['id'], len(self.savedData['id'])))
-        self.assertEquals(self.savedData['url'] ,  "http://test.com/plone/Members/test_user_1_")
-
-        for item in requiredAttributes:
-            self.assertTrue(item in self.savedData, msg="Missing %s in saved data" % item)
-
-        self.assertEquals(self.savedData['type'], "ATFolder")
-        self.assertEquals(self.savedData['subject'], [])
-        self.assertNotEquals(self.savedData['body'], "")
-
 
 
 
