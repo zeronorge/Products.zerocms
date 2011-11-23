@@ -97,21 +97,23 @@ class DataMapper(object):
         del(data[_from])
 
     def getData(self, obj):
+        data, marker = {}, []
         schema = obj.schema
         if schema is None:
             print "no schema defined"
             logger.warn("No schema defined for object: " +
                     repr(obj))
-            return {}, ()
+            return data 
         attributes = schema.keys()
-        data, marker = {}, []
         bodyParts = []
 
         skipList = [
         "locallyAllowedTypes","rights","contributors","immediatelyAddableTypes","creators","constrainTypesMode"]
+        print repr(attributes)
         for name in attributes:
             if name in skipList:
                 continue
+
             try:
                 value = getattr(obj, name)
                 if callable(value):
@@ -124,10 +126,12 @@ class DataMapper(object):
                 logger.exception('Error occured while getting data for '
                     'indexing!')
                 continue
+
             if not isinstance(value, (str, int,
-                    tuple,unicode)):
+                    tuple,unicode,list)):
                 _type = type(value)
                 className = None
+
                 if (_type == 'instance'):
                     className = value.__class__.__name__
 
@@ -135,23 +139,24 @@ class DataMapper(object):
                           className in handlers:
                     value = mapper[className]()
 
-                    print "converted %s: %s %s" %(name,
-                            value,className)
+                    #print "converted %s: %s %s" %(name,value,className)
                 else:
                     if className is None:
                         logger.warn("Unindexed type: %s = %s" % (name, type(name).__name__ ))
                     else:
                         logger.warn("Unindexed type: %s = %s" % (name, className))
                     continue
-                print "%s %s" (name, className)
             # ensure we only deal with unicode attributes
             if isinstance(value, str):
-                value = unicode(value) 
+                logger.warn("Trying to convert  " + name + 
+                        " with value: " + repr(value) + " " + value + " "  )
+                value = unicode(value, "utf-8")
 
             if isinstance(schema[name], TextField) or isinstance(value, (unicode)):
                 bodyParts.append(value)
-
+           
             if value is not None:
+                name = self.checkName(name)
                 data[name] = value
         #missing = set(schema.requiredFields) - set(data.keys())
         if not 'body' in data:
@@ -159,4 +164,13 @@ class DataMapper(object):
         return data
 
 
+    def checkName(self, name):
+        """Checks if the name should be changed due to mappings and returns the new name
+        
+           Todo: make this configurable, add lookup hash instead of just an if
+        """
+
+        if name is 'subject':
+            return "tags"
+        return name
 
