@@ -52,7 +52,7 @@ class RequestFactory(object):
         if (res.status_code != 200):
             logger.error("Posting document to %s produced error: %d\n%s" % 
                     (self.post_url, res.status_code, res.content))
-            raise Exception("Posting document failed, will not continue: " + res.status_code)
+            raise Exception("Posting document failed, will not continue: %d " % res.status_code)
 
 
 class ZeroCMSIndexProcessor(object):

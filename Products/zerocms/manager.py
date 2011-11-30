@@ -41,7 +41,7 @@ class ZeroCMSSettings(Persistent):
         'instance_id': settings.instance_id,
         'instance_url': settings.instance_url
         }
-        logger.info("registry settings returnes " + repr(config))
+        #logger.info("registry settings returnes " + repr(config))
         return config
 
 
