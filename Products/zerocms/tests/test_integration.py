@@ -26,7 +26,7 @@ class RequestFactoryTests(ZeroCMSTestCase):
     def afterSetUp(self):
         registry = getUtility(IRegistry)
         settings = registry.forInterface(IZeroCMSSettings, check=False)
-        settings.post_url = u"http://"
+        settings.post_url = u"http://api/add"
     def makeRequest(self):
         return mock()
 
@@ -39,8 +39,18 @@ class RequestFactoryTests(ZeroCMSTestCase):
         factory.save({'id' : 22})
 #        verifyZeroInteractions(request)
 
-        verify(request).post(u"http://", '{"id": 22}')
+        verify(request).post(u"http://api/add", '{"id": 22}')
 
+    def test_delete(self):
+        factory = RequestFactory()
+        request = mock()
+        requestResponse = Bunch(status_code = 200, content="testContent") 
+        when(request).delete(any()).thenReturn(requestResponse)
+        factory.getRequests = lambda: request
+
+        factory.delete({'id' : 22})
+        self.assertEqual(u"http://api/22", factory.delete_url)
+        verify(request).delete(u"http://api/22")
 
 class IndexingTests(ZeroCMSTestCase):
 
@@ -75,6 +85,9 @@ class IndexingTests(ZeroCMSTestCase):
         self.assertEquals(self.folder.Title(), 'Foo')
     
         self.assertRaises(Exception, commit)
+
+    def testDeleteObject(self):
+        self.folder.processForm(values={'url': 'Boo'})    # sends remove and index
 
 
     def testIndexObject(self):

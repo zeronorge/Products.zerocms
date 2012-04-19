@@ -41,18 +41,34 @@ class RequestFactory(object):
         return requests
 
     def save(self, values):
-        config = queryUtility(IZeroCMSSettings)
-        if config is not None:
-            self.post_url = config.getConfig()['post_url']
-        else:
-            raise Exception("No config defined.")
-
+        self._loadConfig()
         logger.info("Posting document to %s \n%s"% (self.post_url, json.dumps(values)))
         res = self.getRequests().post(self.post_url, json.dumps(values))
         if (res.status_code != 200):
             logger.error("Posting document to %s produced error: %d\n%s" % 
                     (self.post_url, res.status_code, res.content))
             raise Exception("Posting document failed, will not continue: %d " % res.status_code)
+
+    def delete(self, values):
+        """Deletes a document, values: the document dict"""
+        self._loadConfig()
+
+        self.delete_url = self.post_url[:-3] + unicode(values['id'])
+        logger.info("DELETE to %s"% (self.delete_url))
+
+        res = self.getRequests().delete(self.delete_url)
+        if (res.status_code != 200):
+            logger.error("DELETE to %s produced error: %d\n%s" % 
+                    (self.delete_url, res.status_code, res.content))
+            raise Exception("Posting document failed, will not continue: %d " % res.status_code)
+
+    def _loadConfig(self):
+        config = queryUtility(IZeroCMSSettings)
+        if config is not None:
+            self.post_url = config.getConfig()['post_url']
+        else:
+            raise Exception("No config defined.")
+
 
 
 class ZeroCMSIndexProcessor(object):
@@ -85,13 +101,7 @@ class ZeroCMSIndexProcessor(object):
 
     def index(self, obj, attributes=None):
         logger.info("Index called: ")
-        self.loadConfig()
-
-        mapper = DataMapper(self.config['instance_id'],
-                self.config['instance_url'])
-        
-        
-        data= mapper.convert(self.wrapObject(obj), obj.__class__.__name__)
+        data = self.makeData(obj)
         #print "Got data: \n%s" % repr(data)
         self.getRequestFactory().save(data)
 
@@ -99,8 +109,22 @@ class ZeroCMSIndexProcessor(object):
     def reindex(self, obj, attributes=None):
         self.index(obj, attributes)
 
+
     def unindex(self, obj):
-        raise Exception("Not implemented yet!")
+        logger.info("Unindex called")
+        #print "Got data: \n%s" % repr(data)
+        data = self.makeData(obj)
+        self.getRequestFactory().delete(data)
+
+    def makeData(self, obj):
+        "Calld by inded and unindex to get the document"
+        self.loadConfig()
+
+        mapper = DataMapper(self.config['instance_id'],
+                self.config['instance_url'])
+        
+        return mapper.convert(self.wrapObject(obj), obj.__class__.__name__)
+       
 
     def wrapObject(self, obj):
         """ wrap object with an "IndexableObjectWrapper` (for Plone < 3.3) or
